@@ -33,8 +33,8 @@ def chatbot_reply(user):
 
         print("API Response:", result)
 
-        if 'choices' not in result:
-            return f"API Error: {result.get('error', {}).get('message', 'Unknown error')}"
+       if 'choices' not in result:
+    return f"API Error: {str(result)}"
 
         reply = result['choices'][0]['message']['content']
 
