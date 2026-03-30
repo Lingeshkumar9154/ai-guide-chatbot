@@ -1,1 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Guide Chatbot</title>
+    <style>
+        body { font-family: Arial; background: #111; color: white; }
+        .chat-box { height: 400px; overflow-y: auto; border: 1px solid #444; padding: 10px; }
+        .user { color: lightgreen; margin: 5px; }
+        .bot { color: lightblue; margin: 5px; }
+        input { width: 80%; padding: 10px; }
+        button { padding: 10px; }
+    </style>
+</head>
+<body>
 
+<h2>🤖 AI Guide Chatbot</h2>
+
+<div class="chat-box" id="chatBox"></div>
+
+<form id="chatForm">
+    <input type="text" id="message" placeholder="Type your message..." required>
+    <button type="submit">Send</button>
+</form>
+
+<script>
+function escapeHTML(text) {
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+document.getElementById("chatForm").onsubmit = async function(e) {
+    e.preventDefault();
+
+    let input = document.getElementById("message");
+    let chatBox = document.getElementById("chatBox");
+
+    let userText = input.value;
+
+    chatBox.innerHTML += `<div class="user">You: ${userText}</div>`;
+
+    let response = await fetch("/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({ message: userText })
+    });
+
+    let botReply = await response.text();
+
+    let formattedReply = escapeHTML(botReply).replace(/\n/g, "<br>");
+
+    chatBox.innerHTML += `<div class="bot">${formattedReply}</div>`;
+
+    input.value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
+};
+</script>
+
+</body>
+</html>
