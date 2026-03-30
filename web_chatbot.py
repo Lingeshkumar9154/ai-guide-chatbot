@@ -8,7 +8,7 @@ app = Flask(__name__)
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 headers = {
-    "Authorization": "Bearer YOUR_API_KEY",  # 🔥 un API key inga podu
+    "Authorization": "Bearer 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",  # 🔥 un API key inga podu
     "Content-Type": "application/json"
 }
 
