@@ -1,15 +1,10 @@
 from flask import Flask, render_template, request
-import requests
+from groq import Groq
 
 conversation_history = []
 app = Flask(__name__)
 
-API_URL = "https://openrouter.ai/api/v1/chat/completions"
-
-headers = {
-   "Authorization": "Bearer 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",
-    "Content-Type": "application/json"
-}
+client = Groq(api_key="YOUR_GROQ_API_KEY_HERE")
 
 def chatbot_reply(user):
     try:
@@ -18,25 +13,19 @@ def chatbot_reply(user):
             "content": user
         })
 
-        data = {
-            "model": "google/gemma-3-4b-it:free",
-            "messages": [
-                {
-                    "role": "system",
-                    "content": "You are a friendly AI assistant. Always reply ONLY in English or Tanglish (Tamil in English letters). Never use Hindi or other languages. Always give clear, short and structured answers. Use bullet points or steps when needed. Keep answers simple like a friend explaining. Avoid long paragraphs. Always keep answers under 5-6 lines unless asked. When giving code, always format it properly using code blocks like ```c or ```python and ensure it is complete and correct. Always provide recent or approximate latest data when asked."
-                }
-            ] + conversation_history
-        }
+        messages = [
+            {
+                "role": "system",
+                "content": "You are a friendly AI assistant. Always reply ONLY in English or Tanglish (Tamil in English letters). Never use Hindi. Give clear, short and structured answers. Use bullet points when needed. Keep answers under 5-6 lines unless asked."
+            }
+        ] + conversation_history
 
-        response = requests.post(API_URL, headers=headers, json=data)
-        result = response.json()
+        response = client.chat.completions.create(
+            model="llama3-8b-8192",
+            messages=messages
+        )
 
-        print("API Response:", result)
-
-       if 'choices' not in result:
-    return f"API Error: {str(result)}"
-
-        reply = result['choices'][0]['message']['content']
+        reply = response.choices[0].message.content
 
         conversation_history.append({
             "role": "assistant",
